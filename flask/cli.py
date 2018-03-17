@@ -713,7 +713,7 @@ def _validate_key(ctx, param, value):
 @click.command('run', short_help='Runs a development server.')
 @click.option('--host', '-h', default='127.0.0.1',
               help='The interface to bind to.')
-@click.option('--port', '-p', default=5000,
+@click.option('--port', '-p', type=int, default=None,
               help='The port to bind to.')
 @click.option('--cert', type=CertParamType(),
               help='Specify a certificate file to use HTTPS.')
@@ -753,6 +753,9 @@ def run_command(info, host, port, reload, debugger, eager_loading,
 
     if eager_loading is None:
         eager_loading = not reload
+
+    if port is None:
+        port = int(os.environ.get('FLASK_PORT') or 5000)
 
     show_server_banner(get_env(), debug, info.app_import_path)
     app = DispatchingApp(info.load_app, use_eager_loading=eager_loading)
